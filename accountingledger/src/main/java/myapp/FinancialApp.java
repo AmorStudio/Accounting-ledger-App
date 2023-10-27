@@ -2,7 +2,6 @@ package myapp;
 
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Scanner;
@@ -16,92 +15,9 @@ import java.util.Scanner;
 // Lets break the code down step by step
 
 
-// this is a record called Financial Entry
-// Records are a concise way to create classes with data fields, automatically generating constructors, getters, 'equals' and hashcode methods
- record FinancialEntry (String date, String description, double amount, String vendor) {
-
- }
-
-// this is the ledger class
-// it represents the ledger for storing financial entries like a bookkeeper
-// it maintains a list of FinancialEntry objects
-    class Ledger {
-
-
-        private final List<FinancialEntry> entries;
-
-        public Ledger() {
-
-            //  In the Ledger class constructor it is initialized as an ArrayList:
-            this.entries = new ArrayList<>();
-            // This is important because it provides a clean slate
-            // it starts with an empty list of financial entries that can grow or shrink
-
-            // Throughout the code, you'll see methods like addEntry:
-            // when you add a deposit or payment , it is added to the ArrayList.
-
-        }
-
-
-    // this is my addEntry method
-    // this method allows you to add a financial entry to the ledger
-    public void addEntry(FinancialEntry entry) {
-                            // parameter of the FinancialEntry Class
-        entries.add(entry);
-                  // object
-    }
-    /* The getAllEntries , getDepositEntries and getPaymentEntries Methods below will allow me to successfully retrieve the user entries
-    if the user's deposit amount is more than 0 or payment is less than 0 */
-    public List<FinancialEntry> getAllEntries() {
-            // It returns a List of FinancialEntry objects
-        return entries;
-        // entries is an instance variable of the Ledger class that holds all the financial entries.
-    }
-     public List<FinancialEntry> getDepositEntries()  {
-        List<FinancialEntry> deposits = new ArrayList<>();
-         // Inside this method, a new ArrayList named deposits is created to store the deposit entries.
-        for (FinancialEntry entry : entries) {
-            // iterates through the entries list (which holds all financial entries)
-            if (entry.amount() > 0) {
-                deposits.add(entry);
-            }
-        } return deposits;
-     }
-
-
-    public List<FinancialEntry> getPaymentEntries() {
-        List<FinancialEntry> payments = new ArrayList<>();
-
-        for (FinancialEntry entry : entries) {
-            if (entry.amount() < 0) {
-                payments.add(entry);
-            }
-        }
-        return payments;
-    }
-
-     /* Querying Entries: Methods like getAllEntries, getDepositEntries, getPaymentEntries, and searchByVendor
-     use the ArrayList to filter, retrieve, and return specific subsets/elements of financial entries based on user queries */
-
-    // this is my SearchByVendor method
-    // this method takes a vendor name and returns a list of financial Entries for that Vendor
-    public List<FinancialEntry> searchByVendor(String vendorName) {
-            // Method is declared and takes a String called VendorName
-        List<FinancialEntry> vendorEntries = new ArrayList<>();
-        for (FinancialEntry entry : entries) {
-            // checks whether the vendor name of the entry matches the 'vendorName' provided in case-insensitive manner
-            if (entry.vendor().equalsIgnoreCase(vendorName)) {
-                // comparing the two
-                vendorEntries.add(entry);
-            }
-        }
-        return vendorEntries;
-    }
-}
-     // This is my financial app class
+// This is my financial app class
     // it contains the 'main method' which serves as the entry point for the financial application
     // This is an introduction to the entire app
-
       public class FinancialApp {
 
     // the main method provides a user-friendly text-based menu for user interaction
@@ -147,6 +63,67 @@ import java.util.Scanner;
         } while (choice != 'X');
     }
 
+    // This is my 'addDeposit' Method
+    // This method allows users to add a deposit entry to the ledger
+    private static void addDeposit(Ledger ledger, Scanner scanner)
+    // It takes 'ledger' the ledger object and 'Scanner' as parameters (usually within a method)
+
+            throws IOException {
+        // this method collects the Deposit information, Including the date,description, amount and Vendor name from the user
+        String date = getUserInput(scanner, "Enter the deposit date (YYYY-MM-DD): ");
+        String description = getUserInput(scanner, "Enter the deposit description: ");
+        double amount = Double.parseDouble(getUserInput(scanner, "Enter the deposit amount: "));
+        String vendor = getUserInput(scanner, "Enter the vendor name: ");
+
+// it collects a new Financial Entry object with the provided information and add it to the ledger
+        FinancialEntry entry = new FinancialEntry(date, description, amount, vendor);
+        ledger.addEntry(entry);
+        // it also calls the 'saveToCSV' method to save the entry to a csv File
+        saveToCSV(entry);
+        System.out.println("Deposit information saved.");
+    }
+    // allows users to make an entry (debit) in the ledger
+    private static void makePayment(Ledger ledger, Scanner scanner)
+    // it takes 'ledger' and 'scanner' as parameters similar to the addDeposit method
+            throws IOException {
+        // The method collects payment information, including the date, description and amount
+        // it takes a 'Scanner' for user input and a prompt message as parameters
+        String date = getUserInput(scanner, "Enter the payment date (YYYY-MM-DD): ");
+        // Displays the prompt message to the user, instructing them on what to enter
+        String description = getUserInput(scanner, "Enter the payment description: ");
+        // it reads the user input as a string
+        double amount = -Double.parseDouble(getUserInput(scanner, "Enter the payment amount: "));
+        // converting a string to a double
+        String vendor = getUserInput(scanner, "Enter the vendor name: ");
+        // it collects a new Financial Entry object with the provided information and add it to the ledger
+        FinancialEntry entry = new FinancialEntry(date, description, amount, vendor);
+        ledger.addEntry(entry);
+        // it also calls the 'saveToCSV' method to save the entry to a csv File
+        saveToCSV(entry);
+        // Success Message
+        System.out.println("Payment information saved.");
+    }
+
+    private static String getUserInput(Scanner scanner, String prompt) {
+        // displays the prompt message to the user, instructing them on what to enter.
+        System.out.print(prompt);
+        // reads the user's input as a string, and this string is returned as the result of the method.
+        return scanner.next();
+    }
+
+    private static void displayEntries(List<FinancialEntry> entries) {
+        if (entries.isEmpty()) {
+            System.out.println("No entries found.");
+            return;
+        }
+        // prints the table header
+        System.out.println("Date | Description | Amount | Vendor");
+        // inside the loop, for each entry, it concatenates the values of entry.date(),
+        // entry.description(), entry.amount(), and entry.vendor() to form a single line of text that represents the entry's details.
+        for (FinancialEntry entry : entries) {
+            System.out.println(entry.date() + " | " + entry.description() + " | $" + entry.amount() + " | " + entry.vendor());
+        }
+    }
 
 // This is my 'showLedger' method
     // it is responsible for displaying the ledger screen,
@@ -381,67 +358,6 @@ import java.util.Scanner;
         System.out.println("Month-to-Date Report (" + currentMonthYear + "):");
         System.out.println("Total Deposits: $" + totalDeposits);
         System.out.println("Total Payments: $" + (-totalPayments));
-    }
-     // This is my 'addDeposit' Method
-    // This method allows users to add a deposit entry to the ledger
-    private static void addDeposit(Ledger ledger, Scanner scanner)
-    // It takes 'ledger' the ledger object and 'Scanner' as parameters (usually within a method)
-
-            throws IOException {
-        // this method collects the Deposit information, Including the date,description, amount and Vendor name from the user
-        String date = getUserInput(scanner, "Enter the deposit date (YYYY-MM-DD): ");
-        String description = getUserInput(scanner, "Enter the deposit description: ");
-        double amount = Double.parseDouble(getUserInput(scanner, "Enter the deposit amount: "));
-        String vendor = getUserInput(scanner, "Enter the vendor name: ");
-
-// it collects a new Financial Entry object with the provided information and add it to the ledger
-        FinancialEntry entry = new FinancialEntry(date, description, amount, vendor);
-        ledger.addEntry(entry);
-        // it also calls the 'saveToCSV' method to save the entry to a csv File
-        saveToCSV(entry);
-        System.out.println("Deposit information saved.");
-    }
-    // allows users to make an entry (debit) in the ledger
-    private static void makePayment(Ledger ledger, Scanner scanner)
-            // it takes 'ledger' and 'scanner' as parameters similar to the addDeposit method
-            throws IOException {
-           // The method collects payment information, including the date, description and amount
-        // it takes a 'Scanner' for user input and a prompt message as parameters
-        String date = getUserInput(scanner, "Enter the payment date (YYYY-MM-DD): ");
-        // Displays the prompt message to the user, instructing them on what to enter
-        String description = getUserInput(scanner, "Enter the payment description: ");
-        // it reads the user input as a string
-        double amount = -Double.parseDouble(getUserInput(scanner, "Enter the payment amount: "));
-        // converting a string to a double
-        String vendor = getUserInput(scanner, "Enter the vendor name: ");
-    // it collects a new Financial Entry object with the provided information and add it to the ledger
-        FinancialEntry entry = new FinancialEntry(date, description, amount, vendor);
-        ledger.addEntry(entry);
-        // it also calls the 'saveToCSV' method to save the entry to a csv File
-        saveToCSV(entry);
-        // Success Message
-        System.out.println("Payment information saved.");
-    }
-
-    private static String getUserInput(Scanner scanner, String prompt) {
-        // displays the prompt message to the user, instructing them on what to enter.
-        System.out.print(prompt);
-        // reads the user's input as a string, and this string is returned as the result of the method.
-        return scanner.next();
-    }
-
-    private static void displayEntries(List<FinancialEntry> entries) {
-        if (entries.isEmpty()) {
-            System.out.println("No entries found.");
-            return;
-        }
-        // prints the table header
-        System.out.println("Date | Description | Amount | Vendor");
-        // inside the loop, for each entry, it concatenates the values of entry.date(),
-        // entry.description(), entry.amount(), and entry.vendor() to form a single line of text that represents the entry's details.
-        for (FinancialEntry entry : entries) {
-            System.out.println(entry.date() + " | " + entry.description() + " | $" + entry.amount() + " | " + entry.vendor());
-        }
     }
 
     private static void searchByVendor(Ledger ledger, Scanner scanner) {
