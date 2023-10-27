@@ -5,7 +5,7 @@ This Java Accounting Ledger application is designed to manage financial transact
 
 1. Classes are defined in the package myapp;
 
-2. Financial Entry is a simplified record class
+2. Financial Entry is a simplified record class.
   
 3. The class named FinancialApp holds the main() method
     - Home Screen
