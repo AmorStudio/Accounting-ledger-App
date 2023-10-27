@@ -19,6 +19,7 @@ This Java Accounting Ledger application is designed to manage financial transact
     - Ledger Menu ( ---> 4 )
     - Reports Menu
 ![Reports screen](https://github.com/Githollywood/Capstone1/assets/147069807/97a0ef49-313f-48ee-b964-1f8ec03243ee)    
+
     - generatePreviousYearReport
     - generatePreviousMonthReport
     - generateMonthToDateReport
