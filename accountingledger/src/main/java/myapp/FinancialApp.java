@@ -143,6 +143,7 @@ import java.util.Scanner;
                 case 'X' -> System.out.println("Exiting the application.");
                 default -> System.out.println("Invalid Option, Please try again ");
             }
+            //  // The while (ledgerOption != 'X') condition means that the loop will continue running as long as the ledgerOption is not equal to 'X'.
         } while (choice != 'X');
     }
 
@@ -215,7 +216,7 @@ import java.util.Scanner;
             reportOption = scanner.next().charAt(0);
             // Depending on the selected report option , a Switch Statement is used to determine the corresponding actions
             // options 1-5 call specific methods to generate the corresponding financial reports.
-            // if '0' is entered, the method does nothing, effectively returning to the ledger screen menu
+            // if '0' is entered effectively returns back to the ledger screen menu
             switch (Character.toUpperCase(reportOption)) {
                 case '1' -> generateMonthToDateReport(ledger);
                 case '2' -> generatePreviousMonthReport(ledger);
@@ -231,24 +232,27 @@ import java.util.Scanner;
                 // if the user enters an invalid report option, an error message is displayed and the user is prompted to try again.
                 default -> System.out.println("Invalid report option. Please try again.");
             }
-            // Keep running as long as it is not prompted to go back or go to the home menu
+            // Keep running as long as it is not prompted to go back to the home or ledger menu
         } while (reportOption != '0' && reportOption != 'H');
     }
 
     // this is my 'generatePreviousYearReport' method it generates a financial Report for the previous year.
-    // Option 4 in the showReports method on the Reports Menu
     private static void generatePreviousYearReport(Ledger ledger) {
 
         Calendar currentDate = Calendar.getInstance();
         // We begin by getting the current year using the Calendar class
         int currentYear = currentDate.get(Calendar.YEAR);
+        // extracting the current year from the current Date object
 
-// The 'entries' list is obtained from the ledger
+     // The 'entries' list is obtained from the ledger
         List<FinancialEntry> entries = ledger.getAllEntries();
 
-// two variables 'totalDeposits' and 'totalPayments are initialized to zero
+     // two variables 'totalDeposits' and 'totalPayments are initialized to zero
         double totalDeposits = 0;
         double totalPayments = 0;
+
+        //  in order to keep a running total of deposit amounts and payment amounts
+        //  We need To calculate these totals accurately, you need to start with an initial value of zero.
 
 // the previous year is calculated by subtracting 1 from the current year.
 
